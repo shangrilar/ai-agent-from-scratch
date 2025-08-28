@@ -3,7 +3,7 @@ name = "ai-agent-from-scratch"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "fastmcp>=2.11.3",
     "mcp>=1.13.1",
@@ -13,3 +13,6 @@ dependencies = [
     "tavily-python>=0.7.11",
     "wikipedia>=1.4.0",
 ]
+
+[tool.setuptools.packages.find]
+include = ["scratch_agents*"]
