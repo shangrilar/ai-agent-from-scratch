@@ -25,6 +25,12 @@ source .venv/bin/activate
 uv pip install -r requirements.txt
 ```
 
+### Install scratch_agents package (Required for Chapter 4+)
+- For Chapter 4 and beyond, install the scratch_agents package in editable mode:
+```bash
+uv pip install -e .
+```
+
 ### Environment variables
 - Copy the example env file and set your API keys:
 ```bash
