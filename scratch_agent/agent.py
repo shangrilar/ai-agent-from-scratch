@@ -456,14 +456,20 @@ class Agent:
             self.output_tool_name = "final_answer"
 
         # Collect sandbox-executable tools (CH08)
+        invalid_sandbox_tools = []
         for t in tools:
-            if isinstance(t, FunctionTool) and t.sandbox_executable:
-                if self.code_execution != "e2b":
-                    raise ValueError(
-                        f"Tool '{t.name}' is marked as sandbox_executable "
-                        "but code_execution is not enabled."
-                    )
-                self._sandbox_tools.append(t)
+            if not isinstance(t, FunctionTool) or not t.sandbox_executable:
+                continue
+            if self.code_execution != "e2b":
+                invalid_sandbox_tools.append(t.name)
+                continue
+            self._sandbox_tools.append(t)
+
+        if invalid_sandbox_tools:
+            raise ValueError(
+                f"Tools {invalid_sandbox_tools} are marked as sandbox_executable "
+                "but code_execution is not enabled."
+            )
 
         # Add code execution tool (CH08)
         if self.code_execution == "e2b":
