@@ -4,16 +4,24 @@ from __future__ import annotations
 
 import inspect
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Type
 
 from pydantic import BaseModel
 
 from scratch_agents.tools.helpers import format_tool_definition, function_to_input_schema
 from scratch_agents.context import ExecutionContext
 
+if TYPE_CHECKING:
+    from scratch_agents.llm import LlmRequest
+
 
 class BaseTool(ABC):
     """Abstract base class for all tools."""
+
+    DEFAULT_CONFIRMATION_TEMPLATE = (
+        "The agent wants to execute '{name}' with arguments: {arguments}. "
+        "Do you approve?"
+    )
 
     def __init__(
         self,
@@ -21,13 +29,17 @@ class BaseTool(ABC):
         description: str = None,
         tool_definition: Dict[str, Any] = None,
         requires_confirmation: bool = False,
-        confirmation_message_template: str = "",
+        confirmation_message_template: str | None = None,
     ):
         self.name = name or self.__class__.__name__
         self.description = description or self.__doc__ or ""
         self._tool_definition = tool_definition
         self.requires_confirmation = requires_confirmation
-        self.confirmation_message_template = confirmation_message_template
+        self.confirmation_message_template = (
+            confirmation_message_template
+            if confirmation_message_template
+            else self.DEFAULT_CONFIRMATION_TEMPLATE
+        )
 
     @property
     def tool_definition(self) -> Dict[str, Any] | None:
@@ -35,6 +47,14 @@ class BaseTool(ABC):
 
     def get_confirmation_message(self, arguments: dict) -> str:
         return self.confirmation_message_template.format(name=self.name, arguments=arguments)
+
+    async def process_llm_request(
+        self,
+        context: "ExecutionContext",
+        request: "LlmRequest",
+    ) -> None:
+        """Hook for tools to modify the LlmRequest before it is sent (Listing 6.37/6.38)."""
+        return None
 
     @abstractmethod
     async def execute(self, context: ExecutionContext, **kwargs) -> Any:

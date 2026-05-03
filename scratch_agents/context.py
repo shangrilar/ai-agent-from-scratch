@@ -23,6 +23,8 @@ class ExecutionContext:
     # CH06 session
     session: Optional[Any] = None
     session_manager: Optional[Any] = None
+    # CH06 long-term memory
+    memory_manager: Optional[Any] = None
     # CH08 code execution
     code_env: Optional[Any] = None  # E2B Sandbox
     # CH09 agent transfer

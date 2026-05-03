@@ -110,10 +110,13 @@ class Agent:
             context = ExecutionContext(
                 session=session,
                 session_manager=self.session_manager,
+                memory_manager=self.memory_manager,
             )
             # Restore previous events from session
             if session and session.events:
                 context.events = list(session.events)
+        elif context.memory_manager is None:
+            context.memory_manager = self.memory_manager
 
         # Handle tool confirmations (human-in-the-loop resume)
         if tool_confirmations:
@@ -183,7 +186,7 @@ class Agent:
         """Perform one think-act cycle."""
 
         # Prepare what to send to the LLM
-        llm_request = self._prepare_llm_request(context)
+        llm_request = await self._prepare_llm_request(context)
 
         # Run before-LLM callbacks
         for callback in self.before_llm_callbacks:
@@ -343,7 +346,7 @@ class Agent:
     # Internal methods
     # ------------------------------------------------------------------ #
 
-    def _prepare_llm_request(self, context: ExecutionContext) -> LlmRequest:
+    async def _prepare_llm_request(self, context: ExecutionContext) -> LlmRequest:
         """Build an LlmRequest from the current context."""
         # Flatten events into content items
         flat_contents = []
@@ -371,20 +374,30 @@ class Agent:
             except Exception:
                 pass
 
+        # Filter tools that should be exposed to the LLM (Listing 6.38)
+        llm_tools = [t for t in self.tools if t.tool_definition is not None]
+
         # Determine tool choice strategy
         if self.output_tool_name:
             tool_choice = "required"
-        elif self.tools:
+        elif llm_tools:
             tool_choice = "auto"
         else:
             tool_choice = None
 
-        return LlmRequest(
+        request = LlmRequest(
+            model_id=self.model.model,
             instructions=instructions,
             contents=flat_contents,
-            tools=self.tools,
+            tools=llm_tools,
             tool_choice=tool_choice,
         )
+
+        # Let tools modify the request (Listing 6.38)
+        for tool_obj in self.tools:
+            await tool_obj.process_llm_request(context, request)
+
+        return request
 
     def _is_final_response(self, event: Event) -> bool:
         """Check if this event contains a final response."""
@@ -485,7 +498,7 @@ class Agent:
         # Add memory tool if memory_manager is available (CH06)
         if self.memory_manager:
             from scratch_agents.tools.memory_tool import MemoryTool
-            tools.append(MemoryTool(self.memory_manager))
+            tools.append(MemoryTool())
 
         return tools
 

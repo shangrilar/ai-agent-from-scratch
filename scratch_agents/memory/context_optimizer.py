@@ -38,15 +38,14 @@ def count_tokens(request: "LlmRequest") -> int:
     """Calculate total token count of LlmRequest."""
     import tiktoken
 
+    from scratch_agents.llm import build_messages
+
     try:
-        encoding = tiktoken.encoding_for_model("gpt-4")
+        encoding = tiktoken.encoding_for_model(request.model_id or "gpt-5")
     except KeyError:
         encoding = tiktoken.get_encoding("o200k_base")
 
-    # Build messages to count tokens from actual API format
-    from scratch_agents.llm import LlmClient
-    client = LlmClient(model="gpt-4")
-    messages = client._build_messages(request)
+    messages = build_messages(request)
     total_tokens = 0
 
     for message in messages:
@@ -63,7 +62,6 @@ def count_tokens(request: "LlmRequest") -> int:
                 if func.get("arguments"):
                     total_tokens += len(encoding.encode(func["arguments"]))
 
-    # Tool definition tokens
     if request.tools:
         for tool in request.tools:
             tool_def = tool.tool_definition
@@ -185,8 +183,6 @@ async def apply_summarization(
     keep_recent: int = 5,
 ) -> None:
     """Replace old messages with a summary."""
-    from scratch_agents.llm import LlmRequest as LR
-
     contents = request.contents
 
     # Find user message position
@@ -214,11 +210,11 @@ async def apply_summarization(
     to_summarize = contents[summary_start:summary_end]
 
     # Generate summary
-    history_text = _format_history_for_summary(to_summarize)
-    summary = await _generate_summary(llm_client, history_text)
+    history_text = format_history_for_summary(to_summarize)
+    summary = await generate_summary(llm_client, history_text)
 
     # Add summary to instructions
-    request.instructions.append(f"[Previous work summary]\n{summary}")
+    request.append_instructions(f"[Previous work summary]\n{summary}")
 
     # Keep only preserved portions
     request.contents = preserved_start + preserved_end
@@ -227,7 +223,7 @@ async def apply_summarization(
     context.state["last_summary_idx"] = len(preserved_start) - 1
 
 
-def _format_history_for_summary(items: List[ContentItem]) -> str:
+def format_history_for_summary(items: List[ContentItem]) -> str:
     """Convert ContentItem list to text for summarization."""
     lines = []
     for item in items:
@@ -241,7 +237,7 @@ def _format_history_for_summary(items: List[ContentItem]) -> str:
     return "\n".join(lines)
 
 
-async def _generate_summary(llm_client: "LlmClient", history: str) -> str:
+async def generate_summary(llm_client: "LlmClient", history: str) -> str:
     """Generate history summary using LLM."""
     from scratch_agents.llm import LlmRequest as LR
 
