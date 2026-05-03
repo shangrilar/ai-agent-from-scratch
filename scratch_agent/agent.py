@@ -537,24 +537,51 @@ class Agent:
 
     # CH09 multi-agent helpers
     def _get_transfer_targets(self) -> list["Agent"]:
-        """Get list of agents this agent can transfer to."""
-        targets = list(self.sub_agents)
-        if not self.disallow_transfer_to_peers and self.parent:
-            for sibling in self.parent.sub_agents:
-                if sibling is not self and sibling not in targets:
-                    targets.append(sibling)
+        """List of targets the current agent can transfer to (Listing 9.12)."""
+        targets: list["Agent"] = []
+
+        # 1. Children
+        targets.extend(self.sub_agents)
+
+        # 2. Parent and siblings
+        if self.parent:
+            targets.append(self.parent)
+
+            # 3. Siblings (optional)
+            if not self.disallow_transfer_to_peers:
+                for sibling in self.parent.sub_agents:
+                    if sibling.name != self.name:
+                        targets.append(sibling)
         return targets
 
     def _find_agent(self, name: str) -> "Agent" | None:
-        """Find a sub-agent or peer agent by name."""
-        for agent in self._get_transfer_targets():
-            if agent.name == name:
-                return agent
+        """Search by name across the entire agent tree (Listing 9.13)."""
+        root = self
+        while root.parent:
+            root = root.parent
+        return root._find_in_subtree(name)
+
+    def _find_in_subtree(self, name: str) -> "Agent" | None:
+        """Search in current agent and subtree (Listing 9.13)."""
+        if self.name == name:
+            return self
+        for sub in self.sub_agents:
+            if found := sub._find_in_subtree(name):
+                return found
         return None
 
-    def _validate_and_set_sub_agents(self):
-        """Set parent references for sub-agents."""
+    def _validate_and_set_sub_agents(self) -> None:
+        """Validate name/parent duplicates in sub_agents and set parent (Listing 9.11)."""
+        seen_names = set()
         for sub in self.sub_agents:
+            if sub.name in seen_names:
+                raise ValueError(f"Duplicate sub-agent name: '{sub.name}'")
+            seen_names.add(sub.name)
+
+            if sub.parent is not None:
+                raise ValueError(
+                    f"Agent '{sub.name}' already has parent '{sub.parent.name}'"
+                )
             sub.parent = self
 
     async def _process_confirmations(
