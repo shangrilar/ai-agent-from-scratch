@@ -1,17 +1,18 @@
-import json
 from contextlib import asynccontextmanager
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
+from scratch_agent.tools.helpers import format_tool_definition
 
-async def load_mcp_tools(connection: dict) -> list:
+
+async def load_mcp_tools(connection: dict):
     """Load tools from an MCP server connection.
 
     Args:
         connection: Dict with 'command' and 'args' for the MCP server
 
     Returns:
-        List of tool objects from the MCP server
+        ListToolsResult with a `.tools` attribute (matches Listing 3.22 / 3.23).
     """
     server_params = StdioServerParameters(
         command=connection["command"],
@@ -22,24 +23,19 @@ async def load_mcp_tools(connection: dict) -> list:
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
-            tools_result = await session.list_tools()
-            return tools_result.tools
+            return await session.list_tools()
 
 
 def mcp_tools_to_openai_format(mcp_tools) -> list[dict]:
-    """Convert MCP tool definitions to OpenAI function calling format."""
-    openai_tools = []
-    for tool in mcp_tools:
-        openai_tool = {
-            "type": "function",
-            "function": {
-                "name": tool.name,
-                "description": tool.description or f"MCP tool: {tool.name}",
-                "parameters": tool.inputSchema if hasattr(tool, 'inputSchema') else {"type": "object", "properties": {}},
-            }
-        }
-        openai_tools.append(openai_tool)
-    return openai_tools
+    """Convert MCP tool definitions to OpenAI tool format."""
+    return [
+        format_tool_definition(
+            name=tool.name,
+            description=tool.description,
+            parameters=tool.inputSchema,
+        )
+        for tool in mcp_tools.tools
+    ]
 
 
 @asynccontextmanager
