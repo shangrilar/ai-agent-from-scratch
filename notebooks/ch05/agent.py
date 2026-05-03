@@ -11,11 +11,11 @@ from typing import Any, Callable, List, Optional, Type
 
 from pydantic import BaseModel
 
-from scratch_agent.llm import LlmClient, LlmRequest, LlmResponse
-from scratch_agent.types import Event, Message, ToolCall, ToolResult
-from scratch_agent.tools.base import BaseTool, FunctionTool, tool
-from scratch_agent.tools.helpers import format_tool_definition
-from scratch_agent.context import AgentResult, ExecutionContext
+from scratch_agents.llm import LlmClient, LlmRequest, LlmResponse
+from scratch_agents.types import Event, Message, ToolCall, ToolResult
+from scratch_agents.tools.base import BaseTool, FunctionTool, tool
+from scratch_agents.tools.helpers import format_tool_definition
+from scratch_agents.context import AgentResult, ExecutionContext
 
 logger = logging.getLogger(__name__)
 

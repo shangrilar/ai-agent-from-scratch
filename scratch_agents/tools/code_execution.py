@@ -2,8 +2,8 @@
 
 import json
 
-from scratch_agent.tools.base import tool
-from scratch_agent.context import ExecutionContext
+from scratch_agents.tools.base import tool
+from scratch_agents.context import ExecutionContext
 
 
 @tool(

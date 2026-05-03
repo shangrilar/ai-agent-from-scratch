@@ -1,4 +1,4 @@
-"""Core types for the scratch_agent framework."""
+"""Core types for the scratch_agents framework."""
 
 from __future__ import annotations
 

@@ -16,11 +16,11 @@ from typing import TYPE_CHECKING, Any, Callable, List, Optional, Type
 
 from pydantic import BaseModel
 
-from scratch_agent.llm import LlmClient, LlmRequest, LlmResponse
-from scratch_agent.types import Event, Message, ToolCall, ToolResult
-from scratch_agent.tools.base import BaseTool, FunctionTool, tool
-from scratch_agent.tools.helpers import format_tool_definition
-from scratch_agent.context import (
+from scratch_agents.llm import LlmClient, LlmRequest, LlmResponse
+from scratch_agents.types import Event, Message, ToolCall, ToolResult
+from scratch_agents.tools.base import BaseTool, FunctionTool, tool
+from scratch_agents.tools.helpers import format_tool_definition
+from scratch_agents.context import (
     AgentResult,
     ExecutionContext,
     PendingToolCall,
@@ -28,8 +28,8 @@ from scratch_agent.context import (
 )
 
 if TYPE_CHECKING:
-    from scratch_agent.memory.long_term import TaskMemoryManager
-    from scratch_agent.memory.session import BaseSessionManager
+    from scratch_agents.memory.long_term import TaskMemoryManager
+    from scratch_agents.memory.session import BaseSessionManager
 
 logger = logging.getLogger(__name__)
 
@@ -382,7 +382,7 @@ class Agent:
 
         # NEW: Add memory tool
         if self.memory_manager:
-            from scratch_agent.tools.memory_tool import MemoryTool
+            from scratch_agents.tools.memory_tool import MemoryTool
             tools.append(MemoryTool(self.memory_manager))
 
         return tools

@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from scratch_agent.tools.base import BaseTool
-from scratch_agent.context import ExecutionContext
+from scratch_agents.tools.base import BaseTool
+from scratch_agents.context import ExecutionContext
 
 if TYPE_CHECKING:
-    from scratch_agent.memory.long_term import TaskMemoryManager
+    from scratch_agents.memory.long_term import TaskMemoryManager
 
 
 class MemoryTool(BaseTool):

@@ -1,4 +1,4 @@
-"""Base tool abstraction for the scratch_agent framework."""
+"""Base tool abstraction for the scratch_agents framework."""
 
 from __future__ import annotations
 
@@ -8,8 +8,8 @@ from typing import Any, Callable, Dict, List, Optional, Type
 
 from pydantic import BaseModel
 
-from scratch_agent.tools.helpers import format_tool_definition, function_to_input_schema
-from scratch_agent.context import ExecutionContext
+from scratch_agents.tools.helpers import format_tool_definition, function_to_input_schema
+from scratch_agents.context import ExecutionContext
 
 
 class BaseTool(ABC):

@@ -1,4 +1,4 @@
-"""Core Agent class for the scratch_agent framework."""
+"""Core Agent class for the scratch_agents framework."""
 
 from __future__ import annotations
 
@@ -8,16 +8,16 @@ from typing import TYPE_CHECKING, Any, Callable, List, Optional, Type
 
 from pydantic import BaseModel
 
-from scratch_agent.llm import LlmClient, LlmRequest, LlmResponse
-from scratch_agent.tools.base import BaseTool, FunctionTool, tool
-from scratch_agent.tools.helpers import format_tool_definition
-from scratch_agent.context import (
+from scratch_agents.llm import LlmClient, LlmRequest, LlmResponse
+from scratch_agents.tools.base import BaseTool, FunctionTool, tool
+from scratch_agents.tools.helpers import format_tool_definition
+from scratch_agents.context import (
     AgentResult,
     ExecutionContext,
     PendingToolCall,
     ToolConfirmation,
 )
-from scratch_agent.types import (
+from scratch_agents.types import (
     Event,
     Message,
     ToolCall,
@@ -25,8 +25,8 @@ from scratch_agent.types import (
 )
 
 if TYPE_CHECKING:
-    from scratch_agent.memory.long_term import TaskMemoryManager
-    from scratch_agent.memory.session import BaseSessionManager
+    from scratch_agents.memory.long_term import TaskMemoryManager
+    from scratch_agents.memory.session import BaseSessionManager
 
 logger = logging.getLogger(__name__)
 
@@ -363,7 +363,7 @@ class Agent:
         # Add skills prompt if available (CH08)
         if self.skills_path:
             try:
-                from scratch_agent.skills import discover_skills, generate_skills_prompt
+                from scratch_agents.skills import discover_skills, generate_skills_prompt
                 skills = discover_skills(self.skills_path)
                 skills_prompt = generate_skills_prompt(skills)
                 if skills_prompt:
@@ -473,18 +473,18 @@ class Agent:
 
         # Add code execution tool (CH08)
         if self.code_execution == "e2b":
-            from scratch_agent.tools.code_execution import execute_python
+            from scratch_agents.tools.code_execution import execute_python
             tools.append(execute_python)
 
         # Add transfer tool (CH09)
         if self.sub_agents:
-            from scratch_agent.transfer import create_transfer_tool
+            from scratch_agents.transfer import create_transfer_tool
             transfer_tool = create_transfer_tool(self.sub_agents)
             tools.append(transfer_tool)
 
         # Add memory tool if memory_manager is available (CH06)
         if self.memory_manager:
-            from scratch_agent.tools.memory_tool import MemoryTool
+            from scratch_agents.tools.memory_tool import MemoryTool
             tools.append(MemoryTool(self.memory_manager))
 
         return tools
@@ -501,7 +501,7 @@ class Agent:
 
             # Upload skills if available
             if self.skills_path:
-                from scratch_agent.skills import discover_skills
+                from scratch_agents.skills import discover_skills
                 skills = discover_skills(self.skills_path)
                 for skill_info in skills:
                     sandbox.files.write(

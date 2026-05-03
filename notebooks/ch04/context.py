@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
-from scratch_agent.types import Event
+from scratch_agents.types import Event
 
 
 @dataclass

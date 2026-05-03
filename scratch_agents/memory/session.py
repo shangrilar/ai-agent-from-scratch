@@ -8,7 +8,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from scratch_agent.types import Event
+from scratch_agents.types import Event
 
 
 class Session(BaseModel):

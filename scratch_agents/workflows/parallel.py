@@ -5,8 +5,8 @@ from __future__ import annotations
 import asyncio
 from typing import List
 
-from scratch_agent.agent import Agent
-from scratch_agent.context import AgentResult, ExecutionContext
+from scratch_agents.agent import Agent
+from scratch_agents.context import AgentResult, ExecutionContext
 
 
 class ParallelWorkflow(Agent):

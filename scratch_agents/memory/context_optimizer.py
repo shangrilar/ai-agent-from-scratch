@@ -6,11 +6,11 @@ import inspect
 import json
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from scratch_agent.context import ExecutionContext
-from scratch_agent.types import ContentItem, Message, ToolCall, ToolResult
+from scratch_agents.context import ExecutionContext
+from scratch_agents.types import ContentItem, Message, ToolCall, ToolResult
 
 if TYPE_CHECKING:
-    from scratch_agent.llm import LlmClient, LlmRequest, LlmResponse
+    from scratch_agents.llm import LlmClient, LlmRequest, LlmResponse
 
 
 def create_optimizer_callback(apply_optimization, threshold: int = 50000):
@@ -44,7 +44,7 @@ def count_tokens(request: "LlmRequest") -> int:
         encoding = tiktoken.get_encoding("o200k_base")
 
     # Build messages to count tokens from actual API format
-    from scratch_agent.llm import LlmClient
+    from scratch_agents.llm import LlmClient
     client = LlmClient(model="gpt-4")
     messages = client._build_messages(request)
     total_tokens = 0
@@ -185,7 +185,7 @@ async def apply_summarization(
     keep_recent: int = 5,
 ) -> None:
     """Replace old messages with a summary."""
-    from scratch_agent.llm import LlmRequest as LR
+    from scratch_agents.llm import LlmRequest as LR
 
     contents = request.contents
 
@@ -243,7 +243,7 @@ def _format_history_for_summary(items: List[ContentItem]) -> str:
 
 async def _generate_summary(llm_client: "LlmClient", history: str) -> str:
     """Generate history summary using LLM."""
-    from scratch_agent.llm import LlmRequest as LR
+    from scratch_agents.llm import LlmRequest as LR
 
     request = LR(
         instructions=[SUMMARIZATION_PROMPT.format(history=history)],

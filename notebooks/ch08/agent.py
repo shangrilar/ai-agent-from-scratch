@@ -16,11 +16,11 @@ from typing import TYPE_CHECKING, Any, Callable, List, Optional, Type
 
 from pydantic import BaseModel
 
-from scratch_agent.llm import LlmClient, LlmRequest, LlmResponse
-from scratch_agent.types import Event, Message, ToolCall, ToolResult
-from scratch_agent.tools.base import BaseTool, FunctionTool, tool
-from scratch_agent.tools.helpers import format_tool_definition
-from scratch_agent.context import (
+from scratch_agents.llm import LlmClient, LlmRequest, LlmResponse
+from scratch_agents.types import Event, Message, ToolCall, ToolResult
+from scratch_agents.tools.base import BaseTool, FunctionTool, tool
+from scratch_agents.tools.helpers import format_tool_definition
+from scratch_agents.context import (
     AgentResult,
     ExecutionContext,
     PendingToolCall,
@@ -28,8 +28,8 @@ from scratch_agent.context import (
 )
 
 if TYPE_CHECKING:
-    from scratch_agent.memory.long_term import TaskMemoryManager
-    from scratch_agent.memory.session import BaseSessionManager
+    from scratch_agents.memory.long_term import TaskMemoryManager
+    from scratch_agents.memory.session import BaseSessionManager
 
 logger = logging.getLogger(__name__)
 
@@ -312,7 +312,7 @@ class Agent:
         # NEW: Add skills prompt
         if self.skills_path:
             try:
-                from scratch_agent.skills import discover_skills, generate_skills_prompt
+                from scratch_agents.skills import discover_skills, generate_skills_prompt
                 skills = discover_skills(self.skills_path)
                 skills_prompt = generate_skills_prompt(skills)
                 if skills_prompt:
@@ -410,11 +410,11 @@ class Agent:
 
         # NEW: Add code execution tool
         if self.code_execution == "e2b":
-            from scratch_agent.tools.code_execution import execute_python
+            from scratch_agents.tools.code_execution import execute_python
             tools.append(execute_python)
 
         if self.memory_manager:
-            from scratch_agent.tools.memory_tool import MemoryTool
+            from scratch_agents.tools.memory_tool import MemoryTool
             tools.append(MemoryTool(self.memory_manager))
 
         return tools
@@ -429,7 +429,7 @@ class Agent:
             self._register_sandbox_tools(sandbox)
 
             if self.skills_path:
-                from scratch_agent.skills import discover_skills
+                from scratch_agents.skills import discover_skills
                 skills = discover_skills(self.skills_path)
                 for skill_info in skills:
                     sandbox.files.write(

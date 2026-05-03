@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List
 
-from scratch_agent.tools.base import FunctionTool, tool
-from scratch_agent.context import ExecutionContext
+from scratch_agents.tools.base import FunctionTool, tool
+from scratch_agents.context import ExecutionContext
 
 if TYPE_CHECKING:
-    from scratch_agent.agent import Agent
+    from scratch_agents.agent import Agent
 
 
 def create_transfer_tool(target_agents: List["Agent"]) -> FunctionTool:

@@ -8,11 +8,11 @@ from typing import TYPE_CHECKING, Optional
 
 from pydantic import BaseModel
 
-from scratch_agent.context import ExecutionContext
-from scratch_agent.types import ContentItem, Event, Message, ToolCall, ToolResult
+from scratch_agents.context import ExecutionContext
+from scratch_agents.types import ContentItem, Event, Message, ToolCall, ToolResult
 
 if TYPE_CHECKING:
-    from scratch_agent.llm import LlmClient
+    from scratch_agents.llm import LlmClient
 
 
 class TaskMemory(BaseModel):
@@ -99,7 +99,7 @@ class TaskMemoryManager:
 
     async def _extract_memory(self, execution_history: str) -> TaskMemory | None:
         """Extract a TaskMemory from execution history using LLM."""
-        from scratch_agent.llm import LlmRequest
+        from scratch_agents.llm import LlmRequest
 
         prompt = f"""Analyze this agent execution and extract a memory.
 
@@ -132,7 +132,7 @@ Extract:
 
     async def _is_duplicate(self, new_memory: TaskMemory, existing_results: list[TaskMemory]) -> bool:
         """Check if a memory is a duplicate of existing ones."""
-        from scratch_agent.llm import LlmRequest
+        from scratch_agents.llm import LlmRequest
 
         existing_text = "\n".join(m.to_embedding_text() for m in existing_results[:3])
         prompt = f"""Compare this new memory with existing ones and decide if it's a duplicate.

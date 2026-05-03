@@ -6,7 +6,7 @@ from typing import Any
 
 import httpx
 
-from scratch_agent.context import AgentResult, ExecutionContext
+from scratch_agents.context import AgentResult, ExecutionContext
 
 
 class RemoteAgent:

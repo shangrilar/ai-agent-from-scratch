@@ -1,4 +1,4 @@
-"""Execution context and result types for the scratch_agent framework."""
+"""Execution context and result types for the scratch_agents framework."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
-from scratch_agent.types import Event
+from scratch_agents.types import Event
 
 
 @dataclass
@@ -61,6 +61,6 @@ class ToolConfirmation(BaseModel):
 
 
 # Avoid circular import — resolve forward reference
-from scratch_agent.types import ToolCall  # noqa: E402
+from scratch_agents.types import ToolCall  # noqa: E402
 
 PendingToolCall.model_rebuild()

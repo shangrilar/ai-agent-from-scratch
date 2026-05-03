@@ -4,7 +4,7 @@ from typing import List, Literal
 
 from pydantic import BaseModel
 
-from scratch_agent.tools.base import tool
+from scratch_agents.tools.base import tool
 
 
 class Task(BaseModel):

@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
-from scratch_agent.types import Event, ToolCall
+from scratch_agents.types import Event, ToolCall
 
 
 @dataclass

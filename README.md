@@ -5,7 +5,7 @@ Companion code repository for Manning Publications' [*Build an AI Agent from Scr
 ## Structure
 
 ```
-scratch_agent/          # Final package (complete through CH10)
+scratch_agents/          # Final package (complete through CH10)
   types.py              # Message, ToolCall, ToolResult, Event, ContentItem
   context.py            # ExecutionContext, AgentResult, PendingToolCall, ToolConfirmation
   llm.py                # LlmRequest, LlmResponse, LlmClient

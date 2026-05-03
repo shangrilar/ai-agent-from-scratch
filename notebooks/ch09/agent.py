@@ -4,8 +4,8 @@ Changes from CH08:
   - run(): transfer_to handling logic
   - _setup_tools(): transfer_tool auto-added
   - _get_transfer_targets(), _find_agent(), _validate_and_set_sub_agents() new
-This file is identical to the final version of scratch_agent.agent.
+This file is identical to the final version of scratch_agents.agent.
 """
 
 # CH09 agent is identical to the final version, direct re-export
-from scratch_agent.agent import Agent  # noqa: F401
+from scratch_agents.agent import Agent  # noqa: F401

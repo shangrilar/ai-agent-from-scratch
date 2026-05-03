@@ -1,4 +1,4 @@
-"""LLM communication layer for the scratch_agent framework."""
+"""LLM communication layer for the scratch_agents framework."""
 
 from __future__ import annotations
 
@@ -8,8 +8,8 @@ from typing import Any, Dict, List, Optional
 from litellm import acompletion
 from pydantic import BaseModel, Field
 
-from scratch_agent.types import ContentItem, Message, ToolCall, ToolResult
-from scratch_agent.tools.base import BaseTool
+from scratch_agents.types import ContentItem, Message, ToolCall, ToolResult
+from scratch_agents.tools.base import BaseTool
 
 
 class LlmRequest(BaseModel):

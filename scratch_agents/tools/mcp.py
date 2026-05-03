@@ -3,8 +3,8 @@ from contextlib import asynccontextmanager
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-from scratch_agent.tools.base import BaseTool, FunctionTool
-from scratch_agent.tools.helpers import format_tool_definition
+from scratch_agents.tools.base import BaseTool, FunctionTool
+from scratch_agents.tools.helpers import format_tool_definition
 
 
 def _extract_text_content(result) -> str:

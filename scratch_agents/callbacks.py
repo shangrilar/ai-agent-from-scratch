@@ -1,8 +1,8 @@
 """Tool callbacks for the agent: approval and compression."""
 
-from scratch_agent.rag import fixed_length_chunking, get_embeddings, vector_search
-from scratch_agent.context import ExecutionContext
-from scratch_agent.types import ToolCall, ToolResult, Message
+from scratch_agents.rag import fixed_length_chunking, get_embeddings, vector_search
+from scratch_agents.context import ExecutionContext
+from scratch_agents.types import ToolCall, ToolResult, Message
 
 
 DANGEROUS_TOOLS = ["delete_file", "send_email", "execute_sql"]
