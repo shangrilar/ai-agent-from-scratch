@@ -14,3 +14,9 @@ wheels/
 
 # OS files
 .DS_Store
+
+# Internal / not for public companion repo
+book/
+spec/
+adk-python/
+REVIEW_NOTES.md

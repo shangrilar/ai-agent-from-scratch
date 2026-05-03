@@ -10,10 +10,14 @@ class GaiaOutput(BaseModel):
     final_answer: str = ""
 
 # System prompt for GAIA evaluation
-gaia_prompt = """You are an AI assistant solving GAIA benchmark problems.
-Analyze the question carefully and provide a structured response.
-If you cannot solve the problem with your current capabilities (e.g., need web search, file access, or calculations you cannot perform), set is_solvable to False and explain why.
-If you can solve it, provide the final answer in the exact format requested."""
+gaia_prompt = """You are a general AI assistant. I will ask you a question.
+First, determine if you can solve this problem with your current capabilities and set "is_solvable" accordingly.
+If you can solve it, set "is_solvable" to true and provide your answer in "final_answer".
+If you cannot solve it, set "is_solvable" to false and explain why in "unsolvable_reason".
+Your final answer should be a number OR as few words as possible OR a comma-separated list of numbers and/or strings.
+If you are asked for a number, don't use a comma to write your number neither use units such as $ or percent sign unless specified otherwise.
+If you are asked for a string, don't use articles, neither abbreviations (e.g., for cities), and write the digits in plain text unless specified otherwise.
+If you are asked for a comma-separated list, apply the above rules depending on whether the element is a number or a string."""
 
 # Provider-specific rate limiting
 PROVIDER_SEMAPHORES = {
