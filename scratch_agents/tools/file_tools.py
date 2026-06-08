@@ -145,7 +145,7 @@ def _analyze_image(file_path: str, query: str) -> str:
 
     client = OpenAI()
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-5.5",
         messages=[{
             "role": "user",
             "content": [
@@ -169,7 +169,7 @@ def _analyze_audio(file_path: str, query: str) -> str:
 
     client = OpenAI()
     response = client.chat.completions.create(
-        model="gpt-4o-audio-preview",
+        model="gpt-audio",
         messages=[{
             "role": "user",
             "content": [
@@ -216,7 +216,7 @@ def _analyze_pdf(file_path: str, query: str) -> str:
 
     client = OpenAI()
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-5.5",
         messages=[{"role": "user", "content": content}]
     )
     return response.choices[0].message.content

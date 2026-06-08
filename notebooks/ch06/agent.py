@@ -93,8 +93,9 @@ class Agent:
                 session_manager=self.session_manager,
             )
             # Restore previous events from session
-            if session and session.events:
+            if session:
                 context.events = list(session.events)
+                context.state = dict(session.state)
 
         # NEW: Handle tool confirmations (human-in-the-loop resume)
         if tool_confirmations:
@@ -112,9 +113,10 @@ class Agent:
             result = await self.step(context, verbose=verbose)
 
             # NEW: Check for pending tool calls (human-in-the-loop)
-            if result and result.status == "pending":
+            if result and result.status == "pending_confirmation":
                 if session and self.session_manager:
                     session.events = list(context.events)
+                    session.state = dict(context.state)
                     await self.session_manager.save(session)
                 return result
 
@@ -133,6 +135,7 @@ class Agent:
         # NEW: Save session
         if session and self.session_manager:
             session.events = list(context.events)
+            session.state = dict(context.state)
             await self.session_manager.save(session)
 
         return AgentResult(output=context.final_result, context=context)
@@ -169,7 +172,7 @@ class Agent:
         tool_calls = [c for c in llm_response.content if isinstance(c, ToolCall)]
         if tool_calls:
             result = await self.act(context, tool_calls)
-            if result and result.status == "pending":
+            if result and result.status == "pending_confirmation":
                 return result
 
         context.increment_step()
@@ -270,7 +273,7 @@ class Agent:
             return AgentResult(
                 output=None,
                 context=context,
-                status="pending",
+                status="pending_confirmation",
                 pending_tool_calls=pending,
             )
 

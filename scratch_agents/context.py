@@ -45,7 +45,7 @@ class AgentResult:
     """Result of an agent execution."""
     output: Any  # str | BaseModel
     context: ExecutionContext
-    status: str = "complete"  # "complete" | "pending" | "error"
+    status: str = "complete"  # "complete" | "pending_confirmation" | "error"
     pending_tool_calls: list = field(default_factory=list)
 
 
@@ -60,6 +60,7 @@ class ToolConfirmation(BaseModel):
     tool_call_id: str
     approved: bool
     modified_arguments: dict | None = None
+    reason: str | None = None
 
 
 # Avoid circular import — resolve forward reference

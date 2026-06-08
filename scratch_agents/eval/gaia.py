@@ -84,16 +84,75 @@ async def evaluate_gaia_single(problem: dict, model: str) -> dict:
             "error": str(e),
         }
 
+
+async def evaluate_gaia_agent_single(problem: dict, model: str, tools: list) -> dict:
+    """Evaluate one problem using the full Agent loop and optional tools."""
+    from scratch_agents.agent import Agent
+    from scratch_agents.llm import LlmClient
+
+    try:
+        agent = Agent(
+            model=LlmClient(model=model),
+            tools=tools,
+            instructions=gaia_prompt,
+            output_type=GaiaOutput,
+            max_steps=15,
+        )
+        result = await agent.run(problem["Question"])
+        output = result.output
+        if output is None:
+            return {
+                "task_id": problem["task_id"],
+                "model": model,
+                "correct": False,
+                "is_solvable": None,
+                "prediction": None,
+                "answer": problem["Final answer"],
+                "error": "Agent did not return a final GaiaOutput",
+                "steps": result.context.current_step,
+            }
+        if not isinstance(output, GaiaOutput):
+            output = GaiaOutput.model_validate(output)
+
+        return {
+            "task_id": problem["task_id"],
+            "model": model,
+            "correct": is_correct(output.final_answer, problem["Final answer"]),
+            "is_solvable": output.is_solvable,
+            "prediction": output.final_answer,
+            "answer": problem["Final answer"],
+            "unsolvable_reason": output.unsolvable_reason,
+            "steps": result.context.current_step,
+        }
+    except Exception as e:
+        return {
+            "task_id": problem["task_id"],
+            "model": model,
+            "correct": False,
+            "is_solvable": None,
+            "prediction": None,
+            "answer": problem["Final answer"],
+            "error": str(e),
+        }
+
 async def run_experiment(
     problems: list[dict],
     models: list[str],
+    tools: list | None = None,
 ) -> dict[str, list]:
     """Evaluate all models on all problems."""
-    tasks = [
-        evaluate_gaia_single(problem, model)
-        for problem in problems
-        for model in models
-    ]
+    if tools is None:
+        tasks = [
+            evaluate_gaia_single(problem, model)
+            for problem in problems
+            for model in models
+        ]
+    else:
+        tasks = [
+            evaluate_gaia_agent_single(problem, model, tools)
+            for problem in problems
+            for model in models
+        ]
 
     all_results = await tqdm_asyncio.gather(*tasks)
 

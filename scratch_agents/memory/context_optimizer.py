@@ -41,7 +41,7 @@ def count_tokens(request: "LlmRequest") -> int:
     from scratch_agents.llm import build_messages
 
     try:
-        encoding = tiktoken.encoding_for_model(request.model_id or "gpt-5")
+        encoding = tiktoken.encoding_for_model(request.model_id or "gpt-5.5")
     except KeyError:
         encoding = tiktoken.get_encoding("o200k_base")
 

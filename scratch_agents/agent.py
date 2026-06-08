@@ -113,8 +113,9 @@ class Agent:
                 memory_manager=self.memory_manager,
             )
             # Restore previous events from session
-            if session and session.events:
+            if session:
                 context.events = list(session.events)
+                context.state = dict(session.state)
         elif context.memory_manager is None:
             context.memory_manager = self.memory_manager
 
@@ -141,9 +142,10 @@ class Agent:
                 result = await self.step(context, verbose=verbose)
 
                 # Check for pending tool calls (human-in-the-loop)
-                if result and result.status == "pending":
+                if result and result.status == "pending_confirmation":
                     if session and self.session_manager:
                         session.events = list(context.events)
+                        session.state = dict(context.state)
                         await self.session_manager.save(session)
                     return result
 
@@ -171,6 +173,7 @@ class Agent:
             # Save session (sync events back)
             if session and self.session_manager:
                 session.events = list(context.events)
+                session.state = dict(context.state)
                 await self.session_manager.save(session)
 
             return AgentResult(output=context.final_result, context=context)
@@ -216,7 +219,7 @@ class Agent:
         tool_calls = [c for c in llm_response.content if isinstance(c, ToolCall)]
         if tool_calls:
             result = await self.act(context, tool_calls)
-            if result and result.status == "pending":
+            if result and result.status == "pending_confirmation":
                 return result
 
         context.increment_step()
@@ -321,7 +324,7 @@ class Agent:
             return AgentResult(
                 output=None,
                 context=context,
-                status="pending",
+                status="pending_confirmation",
                 pending_tool_calls=pending,
             )
 
@@ -434,7 +437,10 @@ class Agent:
 
     def _setup_tools(self, tools: List[BaseTool]) -> List[BaseTool]:
         """Prepare the tools list, including dynamic tools."""
-        tools = list(tools)  # Copy to avoid modifying original
+        tools = [
+            t if isinstance(t, BaseTool) else FunctionTool(t)
+            for t in tools
+        ]
 
         # Add structured output tool (CH04)
         if self.output_type is not None:
