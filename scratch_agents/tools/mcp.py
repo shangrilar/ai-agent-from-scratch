@@ -32,7 +32,7 @@ def _create_mcp_tool(mcp_tool, connection: dict) -> FunctionTool:
         "function": {
             "name": mcp_tool.name,
             "description": mcp_tool.description,
-            "parameters": mcp_tool.inputSchema,
+            "parameters": mcp_tool.input_schema,
         },
     }
 
@@ -70,7 +70,7 @@ def mcp_tools_to_openai_format(mcp_tools) -> list[dict]:
         format_tool_definition(
             name=tool.name,
             description=tool.description,
-            parameters=tool.inputSchema,
+            parameters=tool.input_schema,
         )
         for tool in mcp_tools.tools
     ]
